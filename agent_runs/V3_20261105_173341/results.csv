@@ -1,0 +1,76 @@
+run_id,version,provider,model,scenario,repeat,status,seconds,model_calls,tool_calls,tool_errors,tool_empty,input_tokens,output_tokens,total_tokens,expected,answer,json_valido,stato,causa_principale,cause_secondarie,stato_corretto,causa_corretta,prove_totali,prove_verificate,prove_non_trovate,diagnosi_corretta,valori_inventati,note
+20261105_173341,V3,gemini,gemini-2.5-flash,misto,1,OK,12.34,2,7,0,0,5853,1821,7674,CPU di worker-4 satura (circa 100%) con coda di thread; lock presenti ma secondari (circa 116 ms/s).,"```json
+{
+  ""stato"": ""critico"",
+  ""causa_principale"": ""cpu"",
+  ""cause_secondarie"": [],
+  ""prove"": [
+    {
+      ""metrica"": ""CPU %"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 99.99
+    },
+    {
+      ""metrica"": ""Attesa sui lock, ms/s"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 138.44
+    },
+    {
+      ""metrica"": ""Connessioni aperte"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 36.00
+    },
+    {
+      ""metrica"": ""Limite connessioni"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 151.00
+    },
+    {
+      ""metrica"": ""Query al secondo"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 20.81
+    },
+    {
+      ""metrica"": ""Thread attivi"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 29.00
+    },
+    {
+      ""metrica"": ""Query lente al secondo"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 1.28
+    }
+  ],
+  ""spiegazione"": ""Il database MySQL su worker-4 è sotto stress critico a causa dell'elevato utilizzo della CPU, che raggiunge quasi il 100%. Questo indica che la CPU è satura e non riesce a gestire il carico di lavoro attuale. Le attese sui lock e le connessioni sono entro i limiti normali.""
+}
+```",True,critico,cpu,[],True,True,7,7,,,,
+20261105_173341,V3,gemini,gemini-2.5-flash,primi_segnali,1,OK,11.68,2,7,0,0,5827,1776,7603,"Degrado iniziale: CPU di worker-4 circa 80%, non ancora satura, con prima crescita dei thread.","```json
+{
+  ""stato"": ""attenzione"",
+  ""causa_principale"": ""cpu"",
+  ""cause_secondarie"": [],
+  ""prove"": [
+    {
+      ""metrica"": ""CPU %"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 79.67
+    },
+    {
+      ""metrica"": ""Attesa sui lock, ms/s"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 27.89
+    },
+    {
+      ""metrica"": ""Connessioni aperte"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 14.00
+    },
+    {
+      ""metrica"": ""Limite connessioni"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 151.00
+    }
+  ],
+  ""spiegazione"": ""Il database su worker-4 è sotto attenzione a causa dell'elevato utilizzo della CPU, che si attesta al 79.67%. L'attesa sui lock e le connessioni aperte sono entro i limiti normali, indicando che la CPU è il fattore limitante principale.""
+}
+```",True,attenzione,cpu,[],True,True,4,4,,,,

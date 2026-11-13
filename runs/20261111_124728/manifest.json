@@ -1,0 +1,75 @@
+{
+  "run_id": "20261111_124728",
+  "settings": {
+    "levels": "64",
+    "baseline_seconds": 30,
+    "step_seconds": 300,
+    "recovery_seconds": 60,
+    "warmup_seconds": 30,
+    "mix": "write_hot=80,read_pk=20",
+    "think_ms": 0,
+    "query_timeout_ms": 30000,
+    "stop_error_pct": 5.0,
+    "stop_p95_s": 10.0,
+    "abort_error_pct": 20.0,
+    "seed": 42,
+    "setup": false
+  },
+  "mix": {
+    "write_hot": 80.0,
+    "read_pk": 20.0
+  },
+  "stop_reason": "ramp_completed",
+  "phases": [
+    {
+      "phase": "baseline",
+      "concurrency": 0,
+      "begin_epoch": 1794397656.704,
+      "end_epoch": 1794397686.704,
+      "requests": 0,
+      "errors": 0,
+      "error_pct": 0,
+      "throughput_qps": 0.0,
+      "p50_s": null,
+      "p95_s": null,
+      "p99_s": null,
+      "probe_p50_s": 0.2765,
+      "client_cpu_pct": 0.1,
+      "aborted": false
+    },
+    {
+      "phase": "step_01",
+      "concurrency": 64,
+      "begin_epoch": 1794397686.706,
+      "end_epoch": 1794397986.709,
+      "requests": 5479,
+      "errors": 0,
+      "error_pct": 0.0,
+      "throughput_qps": 20.292,
+      "p50_s": 2.36011,
+      "p95_s": 9.32673,
+      "p99_s": 11.74445,
+      "probe_p50_s": 0.28273,
+      "client_cpu_pct": 2.0,
+      "p95_read_pk_s": 0.29105,
+      "p95_write_hot_s": 9.63537,
+      "aborted": false
+    },
+    {
+      "phase": "recovery_01",
+      "concurrency": 0,
+      "begin_epoch": 1794397993.051,
+      "end_epoch": 1794398053.052,
+      "requests": 0,
+      "errors": 0,
+      "error_pct": 0,
+      "throughput_qps": 0.0,
+      "p50_s": null,
+      "p95_s": null,
+      "p99_s": null,
+      "probe_p50_s": 0.2842,
+      "client_cpu_pct": 0.1,
+      "aborted": false
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+phase,concurrency,qps,threads_running,threads_connected,connection_usage_pct,buffer_pool_hit_ratio_pct,row_lock_time_ms_s,row_lock_waits_s,slow_queries_s,aborted_connects_s,selects_s,inserts_s,updates_s,cpu_busy_pct
+baseline,0,5.7094,4.0,7.0,1.1589,100.0,0.0,0.0,0.0,0.0299,3.2598,0.0,0.0,0.5753
+step_01,16,22.8963,16.1667,23.0,3.8079,100.0,108.9481,0.5815,0.0,0.0056,11.5694,0.0,2.9778,25.364
+recovery_01,0,5.4389,4.0,7.0,1.1589,100.0,0.0,0.0,0.0,0.0,3.15,0.0,0.0,0.5952
+step_02,32,23.8269,30.8333,39.0,6.457,100.0,116.4852,0.6111,1.1685,0.0,11.7667,0.0,3.2185,25.3812
+recovery_02,0,5.4889,4.0,7.0,1.1589,100.0,0.0,0.0,0.0,0.0,3.1528,0.0,0.0,0.5938

@@ -1,0 +1,119 @@
+run_id,version,provider,model,scenario,repeat,status,seconds,model_calls,tool_calls,tool_errors,tool_empty,input_tokens,output_tokens,total_tokens,expected,answer,diagnosi_corretta,valori_inventati,note
+20261105_102337,V0,gemini,gemini-2.5-flash,normale,1,OK,88.4,8,7,0,2,19333,3864,23197,"Nessuno stress: CPU bassa e nessuna coda (16 connessioni, query leggere).","Ecco un report sullo stato di stress del database MySQL:
+
+**Report sullo Stato del Database MySQL**
+
+**Panoramica Generale:**
+Il monitoraggio delle istanze MySQL (`worker-1`, `worker-2`, `worker-3`, `worker-4`) rivela che la maggior parte dei worker non è sotto stress significativo. Tuttavia, l'istanza `worker-4` mostra alcuni segnali di lieve stress legati alla concorrenza.
+
+**Dettagli per Metrica:**
+
+1.  **Thread in Esecuzione (`mysql_global_status_threads_running`):**
+    *   `worker-1`: 1
+    *   `worker-2`: 1
+    *   `worker-3`: 1
+    *   `worker-4`: 1
+    *   **Analisi:** Tutte le istanze mostrano un numero molto basso di thread attivi (1), indicando un carico di lavoro leggero in questo momento.
+
+2.  **Thread Connessi (`mysql_global_status_threads_connected`):**
+    *   `worker-1`: 1
+    *   `worker-2`: 1
+    *   `worker-3`: 1
+    *   `worker-4`: 21
+    *   **Analisi:** `worker-4` ha 21 connessioni attive, mentre gli altri worker ne hanno solo 1. Sebbene 21 connessioni non siano un numero elevato in assoluto, è significativamente più alto rispetto agli altri worker e potrebbe indicare una maggiore attività su questa istanza.
+
+3.  **Query Lente (`mysql_global_status_slow_queries`):**
+    *   `worker-1`: 0
+    *   `worker-2`: 0
+    *   `worker-3`: 0
+    *   `worker-4`: 0
+    *   **Analisi:** Nessuna istanza ha riportato query lente, il che è un ottimo indicatore di buona performance delle query.
+
+4.  **Attese di Blocco Riga InnoDB (`mysql_global_status_innodb_row_lock_waits`):**
+    *   `worker-1`: 0
+    *   `worker-2`: 0
+    *   `worker-3`: 0
+    *   `worker-4`: 28
+    *   **Analisi:** `worker-4` ha registrato 28 attese di blocco riga, mentre gli altri worker non ne hanno avute. Questo è il primo chiaro segnale di contesa su `worker-4`.
+
+5.  **Tempo di Blocco Riga InnoDB (`mysql_global_status_innodb_row_lock_time`):**
+    *   `worker-1`: 0 ms
+    *   `worker-2`: 0 ms
+    *   `worker-3`: 0 ms
+    *   `worker-4`: 3603 ms (3.6 secondi)
+    *   **Analisi:** Correlato alle attese di blocco riga, `worker-4` ha speso un totale di 3.6 secondi in attesa di sblocchi di riga. Questo conferma che le 28 attese non sono state istantanee e hanno causato un certo ritardo.
+
+**CPU Usage:**
+Le metriche specifiche per l'utilizzo della CPU da parte di MySQL (`mysql_global_status_cpu_user_seconds_total`, `mysql_global_status_cpu_system_seconds_total`) non sono disponibili tramite le query eseguite.
+
+**Conclusioni e Raccomandazioni:**
+
+*   **Stato Generale:** Le istanze MySQL `worker-1`, `worker-2` e `worker-3` non mostrano segni di stress.
+*   **Stato di `worker-4`:** L'istanza `worker-4` mostra un lieve stress dovuto a **contesa di blocco riga**. Sebbene il numero di attese (28) e il tempo totale di attesa (3.6 secondi) non siano critici, indicano che alcune transazioni stanno cercando di accedere o modificare le stesse righe contemporaneamente, causando brevi ritardi.
+
+**Perché `worker-4` è sotto stress (lieve):**
+La causa principale dello stress su `worker-4` è la **contesa per i blocchi di riga (row lock contention)**. Questo si verifica quando più transazioni tentano di modificare la stessa riga o un set di righe che si sovrappongono, e una transazione deve attendere che un'altra rilasci il blocco. Le 28 attese e i 3.6 secondi di tempo di attesa sono la prova diretta di questo fenomeno.
+
+**Raccomandazioni per `worker-4`:**
+
+1.  **Monitoraggio Continuo:** Tenere sotto stretta osservazione le metriche `mysql_global_status_innodb_row_lock_waits` e `mysql_global_status_innodb_row_lock_time` per `worker-4` per rilevare eventuali aumenti.
+2.  **Analisi delle Query:** Se possibile, identificare le query o le transazioni che stanno causando le attese di blocco. Questo potrebbe richiedere l'analisi dei log delle query lente (se configurati per includere le attese di blocco) o l'utilizzo di strumenti come `SHOW ENGINE INNODB STATUS` o `performance_schema` di MySQL per esaminare le transazioni attive e i blocchi.
+3.  **Ottimizzazione delle Query e degli Indici:** Assicurarsi che le query siano ben indicizzate e ottimizzate per ridurre al minimo la durata dei blocchi.
+4.  **Revisione del Design delle Transazioni:** Valutare se ci sono transazioni di lunga durata o transazioni che aggiornano un gran numero di righe che potrebbero contribuire alla contesa.
+
+In sintesi, il database MySQL non è globalmente sotto stress, ma l'istanza `worker-4` richiede attenzione per risolvere la lieve contesa di blocco riga e prevenire futuri problemi di performance.",,,
+20261105_102337,V0,gemini,gemini-2.5-flash,cpu,1,OK,35.23,8,7,0,2,19430,3286,22716,CPU di worker-4 satura (circa 100%) con coda di thread attivi.,"Il database MySQL è sotto stress, in particolare l'istanza `worker-4`. Le altre istanze (`worker-1`, `worker-2`, `worker-3`) non mostrano segni di stress significativi.
+
+Ecco un report dettagliato:
+
+**Report sullo Stress del Database MySQL**
+
+**Stato Generale:**
+L'istanza MySQL `worker-4` (indirizzo IP: `20.119.80.135:9104`) sta mostrando chiari segni di stress e problemi di performance. Le altre istanze monitorate (`worker-1`, `worker-2`, `worker-3`) appaiono stabili.
+
+**Metriche Chiave e Analisi per `worker-4`:**
+
+1.  **`mysql_global_status_threads_running` (Thread in esecuzione):**
+    *   **Valore per `worker-4`:** 12
+    *   **Valore per altre istanze:** 1
+    *   **Analisi:** `worker-4` ha 12 thread attivamente in esecuzione, un numero significativamente più alto rispetto alle altre istanze. Questo indica un carico di lavoro più elevato o un'elaborazione più intensa delle query.
+
+2.  **`mysql_global_status_threads_connected` (Thread connessi):**
+    *   **Valore per `worker-4`:** 22
+    *   **Valore per altre istanze:** 1
+    *   **Analisi:** `worker-4` ha 22 connessioni aperte. Sebbene non sia un numero eccessivamente alto di per sé, in combinazione con i thread in esecuzione, suggerisce che circa la metà delle connessioni sono attive, il che è ragionevole ma contribuisce al carico.
+
+3.  **`mysql_global_status_slow_queries` (Query lente):**
+    *   **Valore per `worker-4`:** 948
+    *   **Valore per altre istanze:** 0
+    *   **Analisi:** Questo è un indicatore critico di stress. `worker-4` ha registrato 948 query lente. Le query lente sono quelle che impiegano più tempo del previsto per essere eseguite e possono bloccare altre operazioni, consumare risorse eccessive e degradare l'esperienza utente. La presenza di un numero così elevato di query lente è una causa primaria di stress.
+
+4.  **`mysql_global_status_innodb_row_lock_waits` (Attese di blocco riga InnoDB):**
+    *   **Valore per `worker-4`:** 13019
+    *   **Valore per altre istanze:** 0
+    *   **Analisi:** `worker-4` ha registrato 13019 attese di blocco riga. Questo indica un'elevata contesa per le risorse. Le transazioni sono costrette ad attendere che altre transazioni rilascino i blocchi sulle righe, il che rallenta drasticamente l'elaborazione e può portare a colli di bottiglia significativi.
+
+5.  **`mysql_global_status_innodb_row_lock_time` (Tempo di attesa blocco riga InnoDB):**
+    *   **Valore per `worker-4`:** 20056958 millisecondi (circa 5 ore e 34 minuti)
+    *   **Valore per altre istanze:** 0
+    *   **Analisi:** Questo valore è estremamente elevato e conferma la gravità della contesa per i blocchi riga su `worker-4`. Le query hanno trascorso un tempo cumulativo molto lungo in attesa di blocchi, il che è un segno inequivocabile di un database sotto forte stress a causa di problemi di concorrenza e transazioni bloccate.
+
+**Conclusioni:**
+
+Il database MySQL sull'istanza `worker-4` è chiaramente sotto stress. Le cause principali di questo stress sembrano essere:
+
+*   **Query lente:** Un numero elevato di query che impiegano troppo tempo per essere eseguite.
+*   **Contesa per i blocchi riga:** Un'alta frequenza e durata delle attese per i blocchi riga, indicando problemi di concorrenza e transazioni che si bloccano a vicenda.
+
+Questi fattori combinati portano a un degrado delle prestazioni, un aumento del carico sul server e una potenziale instabilità del servizio.
+
+**Raccomandazioni (non richieste ma implicite per un report):**
+
+Per mitigare lo stress su `worker-4`, si raccomanda di:
+*   Identificare e ottimizzare le query lente.
+*   Analizzare i pattern di accesso ai dati e le transazioni per ridurre la contesa dei blocchi riga.
+*   Considerare l'indicizzazione appropriata delle tabelle.
+*   Valutare la configurazione di InnoDB, in particolare il buffer pool.
+*   Monitorare l'utilizzo delle risorse hardware (CPU, memoria, I/O disco) sul server di `worker-4`.",,,
+20261105_102337,V0,gemini,gemini-2.5-flash,lock,1,GoogleRateLimitError,68.53,4,4,0,0,25210,2206,27416,"Contesa sui row lock (circa 46.900 ms/s), con CPU bassa e molti thread in attesa.",,,,"Error calling model 'gemini-2.5-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash, d"
+20261105_102337,V0,gemini,gemini-2.5-flash,connessioni,1,GoogleRateLimitError,49.48,1,1,0,0,83,385,468,"Limite di connessioni raggiunto su worker-4 (circa 152, max 151), con CPU bassa.",,,,"Error calling model 'gemini-2.5-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash, d"

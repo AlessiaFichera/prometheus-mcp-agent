@@ -1,0 +1,93 @@
+run_id,version,provider,model,scenario,repeat,status,seconds,model_calls,tool_calls,tool_errors,tool_empty,input_tokens,output_tokens,total_tokens,expected,answer,json_valido,stato,causa_principale,cause_secondarie,stato_corretto,causa_corretta,prove_totali,prove_verificate,prove_non_trovate,diagnosi_corretta,valori_inventati,note
+20261105_223313,V3,gemini,gemini-2.5-flash,normale,1,OK,19.89,2,7,0,0,5800,1814,7614,"Nessuno stress: CPU bassa e nessuna coda (16 connessioni, query leggere).","```json
+{
+  ""stato"": ""normale"",
+  ""causa_principale"": ""nessuna"",
+  ""cause_secondarie"": [],
+  ""prove"": [
+    {
+      ""metrica"": ""CPU %"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 7.97
+    },
+    {
+      ""metrica"": ""Query al secondo"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 53.96
+    },
+    {
+      ""metrica"": ""Thread attivi"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 1.0
+    },
+    {
+      ""metrica"": ""Connessioni aperte"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 21.0
+    },
+    {
+      ""metrica"": ""Limite connessioni"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 151.0
+    },
+    {
+      ""metrica"": ""Attesa sui lock, ms/s"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 8.69
+    },
+    {
+      ""metrica"": ""Query lente al secondo"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 0.0
+    }
+  ],
+  ""spiegazione"": ""Il database MySQL su worker-4 non è sotto stress. La CPU, le connessioni e l'attesa sui lock sono tutti a livelli normali o trascurabili. Non ci sono segnali di saturazione o contesa.""
+}
+```",True,normale,nessuna,[],True,True,7,7,,,,
+20261105_223313,V3,gemini,gemini-2.5-flash,cpu,1,GoogleRateLimitError,45.73,2,2,0,0,2301,774,3075,CPU di worker-4 satura (circa 100%) con coda di thread attivi.,,False,,,,,,,,,,,"Error calling model 'gemini-2.5-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash, de"
+20261105_223313,V3,gemini,gemini-2.5-flash,lock,1,OK,52.38,2,7,0,0,5830,1905,7735,"Contesa sui row lock (circa 46.900 ms/s), con CPU bassa e molti thread in attesa.","```json
+{
+  ""stato"": ""critico"",
+  ""causa_principale"": ""lock"",
+  ""cause_secondarie"": [],
+  ""prove"": [
+    {
+      ""metrica"": ""CPU %"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 15.24
+    },
+    {
+      ""metrica"": ""Attesa sui lock, ms/s"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 47009.30
+    },
+    {
+      ""metrica"": ""Connessioni aperte"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 66.00
+    },
+    {
+      ""metrica"": ""Limite connessioni"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 151.00
+    },
+    {
+      ""metrica"": ""Thread attivi"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 49.00
+    },
+    {
+      ""metrica"": ""Query al secondo"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 61.03
+    },
+    {
+      ""metrica"": ""Query lente al secondo"",
+      ""macchina"": ""worker-4"",
+      ""valore"": 0.00
+    }
+  ],
+  ""spiegazione"": ""Il database su worker-4 è sotto stress critico a causa di un'elevata contesa sui lock, con una media di 47.01 connessioni in attesa. L'utilizzo della CPU e le connessioni aperte sono attualmente entro i limiti normali.""
+}
+```",True,critico,lock,[],True,True,7,7,,,,
+20261105_223313,V3,gemini,gemini-2.5-flash,connessioni,1,GoogleRateLimitError,36.62,0,0,0,0,0,0,0,"Limite di connessioni raggiunto su worker-4 (circa 152, max 151), con CPU bassa.",,False,,,,,,,,,,,"Error calling model 'gemini-2.5-flash' (RESOURCE_EXHAUSTED): 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash, d"

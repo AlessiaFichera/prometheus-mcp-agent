@@ -1,0 +1,41 @@
+run_id,version,provider,model,scenario,repeat,status,seconds,model_calls,tool_calls,tool_errors,tool_empty,input_tokens,output_tokens,total_tokens,expected,answer,diagnosi_corretta,valori_inventati,note
+20261105_155758,V2,gemini,gemini-2.5-flash,normale,1,OK,13.72,2,7,0,0,5046,1341,6387,"Nessuno stress: CPU bassa e nessuna coda (16 connessioni, query leggere).","Report sullo stato del database MySQL:
+
+Il database MySQL su `worker-4` non sembra essere sotto stress.
+
+**Dettagli delle metriche per worker-4:**
+
+*   **CPU %:** 7.97%
+*   **Query al secondo:** 53.96
+*   **Thread attivi:** 1
+*   **Connessioni aperte:** 21
+*   **Limite connessioni:** 151
+*   **Attesa sui lock (ms/s):** 8.69
+*   **Query lente al secondo:** 0
+
+**Analisi:**
+
+*   **Saturazione della CPU:** La CPU è molto bassa (7.97%) e c'è solo 1 thread attivo. Questo non indica saturazione della CPU.
+*   **Contesa sui lock:** L'attesa sui lock è di 8.69 ms/s, un valore presente ma non elevato, e non suggerisce una contesa significativa che stia causando stress al database, specialmente considerando la bassa CPU e i pochi thread attivi.
+*   **Limite di connessioni:** Le connessioni aperte (21) sono ben al di sotto del limite massimo (151), quindi non c'è un problema di esaurimento delle connessioni.
+*   **Query lente:** Non ci sono query lente registrate.
+
+In sintesi, nessuna delle metriche analizzate indica un carico eccessivo o problemi di performance per il database MySQL su `worker-4`.",,,
+20261105_155758,V2,gemini,gemini-2.5-flash,cpu,1,OK,12.54,2,7,0,0,5076,1457,6533,CPU di worker-4 satura (circa 100%) con coda di thread attivi.,"Report sullo stato del database MySQL:
+
+Il database MySQL su `worker-4` è sotto **stress significativo**.
+
+**Motivazioni:**
+
+1.  **Saturazione della CPU:** La CPU di `worker-4` è utilizzata al **99.44%**, indicando una saturazione quasi completa. Questo significa che la macchina sta faticando a gestire il carico di lavoro attuale.
+2.  **Thread attivi elevati:** Ci sono **12 thread attivi** su `worker-4`. In combinazione con l'elevato utilizzo della CPU, questo suggerisce che la CPU è sovraccarica nel tentativo di elaborare le richieste di questi thread.
+3.  **Attesa sui lock:** Si registra un'attesa sui lock di **26.37 ms/s**. Sebbene non sia un valore estremamente alto, contribuisce allo stress generale del sistema, indicando una contesa per le risorse che rallenta l'esecuzione delle query.
+
+**Metriche aggiuntive:**
+
+*   **Query al secondo:** 35.99 query/s. Questo carico, sebbene non estremo, sta mettendo sotto pressione la CPU già satura.
+*   **Connessioni aperte:** 22 connessioni.
+*   **Limite connessioni:** 151 connessioni. Il numero di connessioni aperte è ben al di sotto del limite, quindi il problema non è legato al raggiungimento del numero massimo di connessioni.
+*   **Query lente al secondo:** 0. Non ci sono query lente, il che è positivo, ma non mitiga la saturazione della CPU.
+
+In sintintesi, il database MySQL su `worker-4` è sotto stress principalmente a causa della **saturazione della CPU**, che impedisce al sistema di elaborare efficientemente le query e gestire i thread attivi, portando anche a un certo grado di contesa sui lock.",,,

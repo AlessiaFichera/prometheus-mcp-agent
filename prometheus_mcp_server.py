@@ -1,6 +1,6 @@
-
 import asyncio
 import json
+import os
 import urllib.parse
 import urllib.request
 
@@ -15,6 +15,10 @@ PROMETHEUS_URL = (
     f"http://{PROM_HOST}:{PROM_PORT}/api/v1/query"
 )
 
+# Solo per gli esperimenti: se impostata, ogni query vede i dati di quel momento
+# (epoch in secondi). Se assente, il server si comporta come prima e legge i dati attuali.
+EVAL_TIME = os.getenv("PROMETHEUS_EVAL_TIME")
+
 
 # Creazione del server MCP
 server = FastMCP("prometheus-mcp-server")
@@ -26,7 +30,12 @@ def _execute_prometheus_query(promql: str) -> str:
     if not promql or not promql.strip():
         raise ValueError("La query PromQL non può essere vuota.")
 
-    params = urllib.parse.urlencode({"query": promql})
+    query = {"query": promql}
+
+    if EVAL_TIME:
+        query["time"] = EVAL_TIME
+
+    params = urllib.parse.urlencode(query)
     url = f"{PROMETHEUS_URL}?{params}"
 
     request = urllib.request.Request(

@@ -1,0 +1,27 @@
+{
+  "metrics": {
+    "connection_errors_max_s": "sum by (name) (last_over_time(rate(mysql_global_status_connection_errors_total{error=\"max_connections\"}[{w}])[30m:]))",
+    "select_scan_s": "sum by (name) (last_over_time(rate(mysql_global_status_select_scan[{w}])[30m:]))",
+    "select_full_join_s": "sum by (name) (last_over_time(rate(mysql_global_status_select_full_join[{w}])[30m:]))"
+  },
+  "rules": [
+    {
+      "name": "connessioni_sature",
+      "code": "def connessioni_sature(m):\n    connessioni = m.get(\"connections\")\n    massimo = m.get(\"max_connections\")\n    errori = m.get(\"connection_errors_max_s\")\n    if connessioni is not None:\n        if massimo is not None:\n            if connessioni >= massimo - 1:\n                return diagnosis(\"connessioni_sature\", \"critico\", \"connessioni\", {\"connections\": connessioni, \"max_connections\": massimo, \"connection_errors_max_s\": errori}, \"Le connessioni hanno raggiunto il limite di max_connections: individuare i client che tengono molte connessioni aperte, usare un pool di connessioni o chiudere quelle inattive, e valutare un aumento di max_connections.\")\n    if errori is not None:\n        if errori > 0:\n            return diagnosis(\"connessioni_sature\", \"critico\", \"connessioni\", {\"connections\": connessioni, \"max_connections\": massimo, \"connection_errors_max_s\": errori}, \"MySQL sta rifiutando connessioni per max_connections: individuare i client che tengono molte connessioni aperte, usare un pool di connessioni o chiudere quelle inattive, e valutare un aumento di max_connections.\")\n    return None",
+      "source_scenario": "connessioni",
+      "time": 1793983062.8678083
+    },
+    {
+      "name": "cpu_saturata_carico_query",
+      "code": "def cpu_saturata_carico_query(m):\n    cpu = m.get(\"cpu_pct\")\n    thr = m.get(\"threads_running\")\n    cores = m.get(\"cpu_cores\")\n    if cpu is None or thr is None or cores is None:\n        return None\n    if cores <= 0:\n        return None\n    if cpu >= 95 and thr >= cores * 2:\n        return diagnosis(\"cpu_saturata_carico_query\", \"critico\", \"cpu\", {\"cpu_pct\": cpu, \"threads_running\": thr, \"cpu_cores\": cores, \"threads_per_core\": round(thr / cores, 2)}, \"Individuare le query che generano il carico, ottimizzarle o limitarle, e ridistribuire il traffico verso gli altri worker o aumentare le CPU.\")\n    return None",
+      "source_scenario": "cpu",
+      "time": 1794045776.2923367
+    },
+    {
+      "name": "query_senza_indice",
+      "code": "def query_senza_indice(m):\n    cpu = m.get(\"cpu_pct\")\n    scan = m.get(\"select_scan_s\")\n    if cpu is None or scan is None:\n        return None\n    join = m.get(\"select_full_join_s\")\n    if join is None:\n        join = 0\n    full = scan + join\n    if cpu > 85 and full > 5:\n        return diagnosis(\"query_senza_indice\", \"critico\", \"cpu\", {\"cpu_pct\": cpu, \"scansioni_complete_s\": round(full, 2)}, \"CPU satura con molte scansioni complete: trovare le query senza indice (EXPLAIN, log delle slow query) e aggiungere gli indici mancanti.\")\n    if cpu > 70 and full > 5:\n        return diagnosis(\"query_senza_indice\", \"attenzione\", \"cpu\", {\"cpu_pct\": cpu, \"scansioni_complete_s\": round(full, 2)}, \"CPU alta con molte scansioni complete: verificare con EXPLAIN le query pesanti e aggiungere gli indici mancanti.\")\n    return None",
+      "source_scenario": "primi_segnali",
+      "time": 1794320380.417997
+    }
+  ]
+}

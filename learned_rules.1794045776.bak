@@ -1,0 +1,13 @@
+{
+  "metrics": {
+    "connection_errors_max_s": "sum by (name) (last_over_time(rate(mysql_global_status_connection_errors_total{error=\"max_connections\"}[{w}])[30m:]))"
+  },
+  "rules": [
+    {
+      "name": "connessioni_sature",
+      "code": "def connessioni_sature(m):\n    connessioni = m.get(\"connections\")\n    massimo = m.get(\"max_connections\")\n    errori = m.get(\"connection_errors_max_s\")\n    if connessioni is not None:\n        if massimo is not None:\n            if connessioni >= massimo - 1:\n                return diagnosis(\"connessioni_sature\", \"critico\", \"connessioni\", {\"connections\": connessioni, \"max_connections\": massimo, \"connection_errors_max_s\": errori}, \"Le connessioni hanno raggiunto il limite di max_connections: individuare i client che tengono molte connessioni aperte, usare un pool di connessioni o chiudere quelle inattive, e valutare un aumento di max_connections.\")\n    if errori is not None:\n        if errori > 0:\n            return diagnosis(\"connessioni_sature\", \"critico\", \"connessioni\", {\"connections\": connessioni, \"max_connections\": massimo, \"connection_errors_max_s\": errori}, \"MySQL sta rifiutando connessioni per max_connections: individuare i client che tengono molte connessioni aperte, usare un pool di connessioni o chiudere quelle inattive, e valutare un aumento di max_connections.\")\n    return None",
+      "source_scenario": "connessioni",
+      "time": 1793983062.8678083
+    }
+  ]
+}

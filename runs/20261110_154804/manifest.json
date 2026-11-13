@@ -1,0 +1,83 @@
+{
+  "run_id": "20261110_154804",
+  "settings": {
+    "levels": "16",
+    "baseline_seconds": 30,
+    "step_seconds": 300,
+    "recovery_seconds": 60,
+    "warmup_seconds": 30,
+    "mix": "read_pk=45,read_range=20,join_report=10,join_heavy=5,join_extreme=10,write_insert=10",
+    "think_ms": 0,
+    "query_timeout_ms": 30000,
+    "stop_error_pct": 5.0,
+    "stop_p95_s": 10.0,
+    "abort_error_pct": 20.0,
+    "seed": 42,
+    "setup": false
+  },
+  "mix": {
+    "read_pk": 45.0,
+    "read_range": 20.0,
+    "join_report": 10.0,
+    "join_heavy": 5.0,
+    "join_extreme": 10.0,
+    "write_insert": 10.0
+  },
+  "stop_reason": "ramp_completed",
+  "phases": [
+    {
+      "phase": "baseline",
+      "concurrency": 0,
+      "begin_epoch": 1794322093.429,
+      "end_epoch": 1794322123.429,
+      "requests": 0,
+      "errors": 0,
+      "error_pct": 0,
+      "throughput_qps": 0.0,
+      "p50_s": null,
+      "p95_s": null,
+      "p99_s": null,
+      "probe_p50_s": 0.28914,
+      "client_cpu_pct": 0.0,
+      "aborted": false
+    },
+    {
+      "phase": "step_01",
+      "concurrency": 16,
+      "begin_epoch": 1794322123.431,
+      "end_epoch": 1794322423.435,
+      "requests": 7300,
+      "errors": 0,
+      "error_pct": 0.0,
+      "throughput_qps": 27.037,
+      "p50_s": 0.29025,
+      "p95_s": 2.57148,
+      "p99_s": 4.29287,
+      "probe_p50_s": 0.27714,
+      "client_cpu_pct": 1.5,
+      "p95_join_extreme_s": 4.68828,
+      "p95_join_heavy_s": 0.43208,
+      "p95_join_report_s": 0.33172,
+      "p95_read_pk_s": 0.30075,
+      "p95_read_range_s": 0.30053,
+      "p95_write_insert_s": 0.91624,
+      "aborted": false
+    },
+    {
+      "phase": "recovery_01",
+      "concurrency": 0,
+      "begin_epoch": 1794322424.804,
+      "end_epoch": 1794322484.805,
+      "requests": 0,
+      "errors": 0,
+      "error_pct": 0,
+      "throughput_qps": 0.0,
+      "p50_s": null,
+      "p95_s": null,
+      "p99_s": null,
+      "probe_p50_s": 0.28178,
+      "client_cpu_pct": 0.0,
+      "aborted": false
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+run_id,version,provider,model,scenario,repeat,status,seconds,model_calls,tool_calls,tool_errors,tool_empty,input_tokens,output_tokens,total_tokens,expected,answer,diagnosi_corretta,valori_inventati,note
+20261105_160222,V2,gemini,gemini-2.5-flash,lock,1,OK,15.11,2,7,0,0,5077,1629,6706,"Contesa sui row lock (circa 46.900 ms/s), con CPU bassa e molti thread in attesa.","Report sullo stato del database MySQL
+
+**Valutazione generale:**
+Il database MySQL su `worker-4` è sotto stress.
+
+**Dettagli e motivazioni:**
+
+Le metriche raccolte indicano un problema significativo di contesa sui lock sul server MySQL in esecuzione su `worker-4`.
+
+*   **CPU % su worker-4:** 15.24%
+    *   La CPU non sembra essere un fattore limitante in questo momento, con un utilizzo relativamente basso.
+
+*   **Query al secondo su worker-4:** 61.03
+    *   Il numero di query al secondo è moderato.
+
+*   **Thread attivi su worker-4:** 49
+    *   Ci sono 49 thread attivi, un numero significativamente più alto rispetto agli altri worker (che hanno 1 thread attivo). Questo, unito all'alta attesa sui lock, suggerisce che molti thread sono in attesa.
+
+*   **Connessioni aperte su worker-4:** 66
+    *   Il numero di connessioni aperte è gestibile.
+
+*   **Limite connessioni su worker-4:** 151
+    *   Le connessioni aperte (66) sono ben al di sotto del limite massimo (151), quindi non c'è un problema di saturazione delle connessioni.
+
+*   **Attesa sui lock (ms/s) su worker-4:** 47009.3
+    *   Questo è il dato più critico. Un valore di 47009.3 ms/s indica che i thread stanno spendendo una quantità estremamente elevata di tempo in attesa di lock. Questo è un chiaro segnale di contesa interna al database, dove le transazioni o le query si bloccano a vicenda per accedere alle risorse.
+
+*   **Query lente al secondo su worker-4:** 0
+    *   Non ci sono query lente registrate, il che significa che le query non sono intrinsecamente lente, ma sono rallentate dall'attesa dei lock.
+
+**Conclusione:**
+Il database MySQL su `worker-4` è sotto stress a causa di un'elevata contesa sui lock. Nonostante la CPU non sia satura e il limite di connessioni non sia raggiunto, l'enorme tempo di attesa sui lock indica un collo di bottiglia all'interno del database, probabilmente dovuto a transazioni lunghe, query inefficienti che bloccano tabelle/righe, o un design dello schema che favorisce la contesa.",,,
+20261105_160222,V2,gemini,gemini-2.5-flash,connessioni,1,OK,13.84,2,7,0,0,4416,1728,6144,"Limite di connessioni raggiunto su worker-4 (circa 152, max 151), con CPU bassa.","**Report sullo stato del database MySQL**
+
+Il database MySQL su `worker-4` sembra essere sotto stress o, più precisamente, il suo monitoraggio è compromesso.
+
+**Motivazione:**
+
+La ragione principale di questa valutazione è la **completa assenza di dati relativi alle metriche MySQL per la macchina `worker-4`**. Sebbene `worker-4` mostri un utilizzo della CPU del 7.89% (il più alto tra i worker, ma non critico di per sé), non siamo in grado di valutare lo stato del database a causa della mancanza delle seguenti metriche cruciali:
+
+*   **Query al secondo:** Dati mancanti per `worker-4`.
+*   **Thread attivi:** Dati mancanti per `worker-4`.
+*   **Connessioni aperte:** Dati mancanti per `worker-4`.
+*   **Limite connessioni:** Dati mancanti per `worker-4`.
+*   **Attesa sui lock (ms/s):** Dati mancanti per `worker-4`.
+*   **Query lente al secondo:** Dati mancanti per `worker-4`.
+
+Secondo le linee guida, la mancanza di dati per una macchina, specialmente `worker-4` che ospita MySQL, deve essere segnalata come un problema e non come un'indicazione di buon funzionamento. L'impossibilità di raccogliere queste metriche impedisce una valutazione accurata dello stress sul database.
+
+**Raccomandazioni:**
+
+È fondamentale investigare il motivo per cui le metriche MySQL non vengono raccolte da `worker-4`. Potrebbe esserci un problema con l'exporter MySQL sulla macchina o con la configurazione di Prometheus per lo scraping dei dati da `worker-4`. Una volta ripristinato il monitoraggio, sarà possibile effettuare una valutazione completa dello stress del database.",,,

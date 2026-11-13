@@ -1,0 +1,4 @@
+phase,concurrency,begin_epoch,end_epoch,requests,errors,error_pct,throughput_qps,p50_s,p95_s,p99_s,probe_p50_s,client_cpu_pct,aborted,p95_join_extreme_s,p95_join_heavy_s,p95_join_report_s,p95_read_pk_s,p95_read_range_s,p95_write_insert_s
+baseline,0,1794322093.429,1794322123.429,0,0,0,0.0,,,,0.28914,0.0,False,,,,,,
+step_01,16,1794322123.431,1794322423.435,7300,0,0.0,27.037,0.29025,2.57148,4.29287,0.27714,1.5,False,4.68828,0.43208,0.33172,0.30075,0.30053,0.91624
+recovery_01,0,1794322424.804,1794322484.805,0,0,0,0.0,,,,0.28178,0.0,False,,,,,,

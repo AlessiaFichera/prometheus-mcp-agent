@@ -1,0 +1,70 @@
+run_id,version,provider,model,scenario,repeat,status,seconds,model_calls,tool_calls,tool_errors,tool_empty,input_tokens,output_tokens,total_tokens,expected,answer,diagnosi_corretta,valori_inventati,note
+20261105_160805,V0,gemini,gemini-2.5-flash,lock,1,OK,51.93,7,6,0,1,15434,3091,18525,"Contesa sui row lock (circa 46.900 ms/s), con CPU bassa e molti thread in attesa.","Il database MySQL è sotto stress, in particolare l'istanza `worker-4`. Le istanze `worker-1`, `worker-2` e `worker-3` non mostrano segni di stress.
+
+**Report Dettagliato:**
+
+**Stato Generale:**
+Il database MySQL è sotto stress significativo sull'istanza `worker-4`. Le altre istanze (`worker-1`, `worker-2`, `worker-3`) sembrano operare normalmente senza segni di stress.
+
+**Dettagli per Istanza:**
+
+*   **Istanze `worker-1`, `worker-2`, `worker-3`:**
+    *   **Thread in esecuzione:** 1
+    *   **Thread connessi:** 1
+    *   **Query lente:** 0
+    *   **Attese di blocco riga InnoDB:** 0
+    *   **Tempo di attesa blocco riga InnoDB:** 0
+    *   **Conclusione:** Queste istanze non mostrano alcun segno di stress.
+
+*   **Istanza `worker-4`:**
+    *   **Thread in esecuzione:** 49
+        *   *Interpretazione:* Ci sono 49 connessioni attivamente impegnate nell'esecuzione di query. Questo indica un carico di lavoro elevato.
+    *   **Thread connessi:** 66
+        *   *Interpretazione:* Ci sono 66 connessioni aperte al database. Il fatto che 49 di queste siano attive suggerisce che la maggior parte delle connessioni sta eseguendo operazioni.
+    *   **Query lente:** 948
+        *   *Interpretazione:* Un numero elevato di query lente (948) è un forte indicatore di problemi di performance. Le query lente possono bloccare altre operazioni e consumare risorse in modo inefficiente.
+    *   **Attese di blocco riga InnoDB:** 12521
+        *   *Interpretazione:* Questo numero molto elevato indica che le transazioni sono frequentemente in attesa di rilasciare blocchi su righe, il che è un segno di contesa significativa e problemi di concorrenza.
+    *   **Tempo di attesa blocco riga InnoDB:** 18749261 (millisecondi)
+        *   *Interpretazione:* Un tempo totale di attesa per i blocchi riga estremamente elevato (circa 18749 secondi o oltre 5 ore) conferma che la contesa per i blocchi sta causando ritardi sostanziali e un grave impatto sulle prestazioni.
+
+**Perché il database è sotto stress (per `worker-4`):**
+
+L'istanza `worker-4` è chiaramente sotto stress a causa di una combinazione di fattori:
+1.  **Carico di lavoro elevato:** Un numero significativo di thread in esecuzione e connessioni attive.
+2.  **Query inefficienti:** La presenza di quasi mille query lente indica che alcune operazioni stanno impiegando troppo tempo per essere completate, probabilmente a causa di indici mancanti, query mal ottimizzate o scansioni complete della tabella.
+3.  **Contesa per i blocchi:** L'elevato numero e il tempo totale delle attese di blocco riga InnoDB suggeriscono che molte transazioni stanno cercando di accedere o modificare le stesse righe contemporaneamente, portando a colli di bottiglia e rallentamenti.
+
+**Raccomandazioni (per `worker-4`):**
+*   Identificare e ottimizzare le query lente.
+*   Analizzare i pattern di accesso ai dati per ridurre la contesa dei blocchi.
+*   Considerare l'ottimizzazione degli indici.
+*   Valutare la possibilità di aumentare le risorse hardware o di distribuire il carico di lavoro.",,,
+20261105_160805,V0,gemini,gemini-2.5-flash,connessioni,1,OK,26.8,7,6,0,1,13580,2539,16119,"Limite di connessioni raggiunto su worker-4 (circa 152, max 151), con CPU bassa.","**Report sullo Stato del Database MySQL**
+
+**Data e Ora del Report:** [Ora attuale]
+
+**Riepilogo:**
+Il database MySQL non sembra essere sotto stress al momento. Tutte le metriche chiave monitorate indicano un livello di attività molto basso e l'assenza di colli di bottiglia o problemi di performance.
+
+**Dettagli delle Metriche:**
+
+1.  **Connessioni e Thread Attivi:**
+    *   `mysql_global_status_threads_running`: **1** per tutte le istanze. Questo indica che c'è solo un thread attivo per istanza, suggerendo un carico di lavoro estremamente leggero.
+    *   `mysql_global_status_threads_connected`: **1** per tutte le istanze. Il numero totale di connessioni aperte è molto basso, in linea con i thread attivi.
+
+2.  **Query Lente:**
+    *   `rate(mysql_global_status_slow_queries[5m])`: **0** per tutte le istanze. Non sono state rilevate query lente negli ultimi 5 minuti.
+
+3.  **Contesa di Lock (InnoDB Row Locks):**
+    *   `rate(mysql_global_status_innodb_row_lock_waits[5m])`: **0** per tutte le istanze. Non ci sono state attese per lock di riga negli ultimi 5 minuti.
+    *   `rate(mysql_global_status_innodb_row_lock_time[5m])`: **0** per tutte le istanze. Non è stato speso tempo in attesa di lock di riga negli ultimi 5 minuti.
+
+4.  **Utilizzo della CPU:**
+    *   Le metriche relative all'utilizzo della CPU (`mysql_global_status_cpu_user_seconds_total`, `mysql_global_status_cpu_system_seconds_total`) non hanno restituito dati significativi per un calcolo del tasso negli ultimi 5 minuti. Tuttavia, dato il bassissimo livello di attività rilevato dalle altre metriche, è altamente probabile che anche l'utilizzo della CPU sia minimo.
+
+**Conclusioni:**
+Basandosi sulle metriche analizzate, il database MySQL non è sotto stress. Le istanze mostrano un carico di lavoro minimo, con pochissime connessioni attive, nessuna query lenta e nessuna contesa di lock.
+
+**Raccomandazioni:**
+Continuare a monitorare queste metriche per rilevare eventuali cambiamenti nel carico di lavoro o l'insorgere di problemi. Se il carico di lavoro dovesse aumentare, sarebbe opportuno riesaminare queste metriche e considerare l'aggiunta di monitoraggio per I/O del disco, utilizzo della memoria e traffico di rete per una visione più completa.",,,
